@@ -1,0 +1,90 @@
+* {
+    font-family: "JetBrainsMono Nerd Font", sans-serif;
+    font-size: 14px;
+}
+
+.control-center {
+    background-color: rgba(17, 17, 27, 0.88);
+    border-radius: 0 0 20px 20px;
+    border: 1px solid rgba(137, 180, 250, 0.18);
+    padding: 8px;
+    margin: 0;
+
+    /* REEMPLAZA LAS LÍNEAS DE ALTURA POR ESTAS: */
+    min-height: 0px;            /* Fuerza a GTK a permitir que el contenedor colapse */
+    height: min-content;        /* Se ajusta estrictamente al tamaño mínimo de los elementos hijos */
+    max-height: 500px;          /* Evita que se salga de la pantalla si hay muchas notificaciones */
+    overflow-y: auto;
+}
+
+.control-center .notification-row .notification-background {
+    background-color: rgba(24, 24, 37, 0.85);
+    border-radius: 16px;
+    margin: 6px 0;
+    padding: 8px;
+}
+
+.notification-row .notification-background .notification-default-action {
+    border-radius: 16px;
+}
+
+.notification-row .close-button {
+    background-color: rgba(137, 180, 250, 0.2);
+    color: #cdd6f4;
+    border-radius: 999px;
+    padding: 2px;
+}
+
+.notification-row .close-button:hover {
+    background-color: rgba(137, 180, 250, 0.4);
+}
+
+.notification-content .summary {
+    color: #cdd6f4;
+    font-weight: bold;
+}
+
+.notification-content .body {
+    color: #bac2de;
+}
+
+.notification-content .time {
+    color: #89b4fa;
+    font-size: 11px;
+}
+
+.widget-title {
+    color: #cdd6f4;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 6px 10px;
+}
+
+.widget-title button {
+    background-color: rgba(137, 180, 250, 0.2);
+    color: #89b4fa;
+    border-radius: 12px;
+    padding: 4px 12px;
+}
+
+.widget-dnd {
+    background-color: rgba(24, 24, 37, 0.85);
+    border-radius: 16px;
+    padding: 8px;
+    margin: 4px 0 8px 0;        /* Añade un poco de espacio arriba y abajo */
+    color: #cdd6f4;
+}
+
+.widget-dnd > switch {
+    border-radius: 999px;
+    background-color: rgba(137, 180, 250, 0.2);
+}
+
+.widget-dnd > switch:checked {
+    background-color: #89b4fa;
+}
+
+.widget-dnd > switch slider {
+    border-radius: 999px;
+    background-color: #cdd6f4;
+}

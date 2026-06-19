@@ -1,0 +1,127 @@
+* {
+    font-family: "JetBrainsMono NF", "Symbols Nerd Font", Inter;
+    font-size: 13px;
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+}
+
+window#waybar {
+    background: transparent;
+}
+
+.modules-left {
+    background-color: rgba(30, 30, 46, 0.80);
+    border-radius: 18px;
+    margin: 10px 0 0 12px;
+    padding: 0 12px;
+    border: 1px solid rgba(203, 166, 247, 0.25);
+}
+
+.modules-center {
+    background-color: rgba(30, 30, 46, 0.80);
+    border-radius: 18px;
+    margin: 10px 0 0 12px;
+    padding: 0 16px;
+    border: 1px solid rgba(203, 166, 247, 0.25);
+}
+
+#clock {
+    margin-right: 14px;
+}
+
+.modules-right {
+    background-color: rgba(30, 30, 46, 0.80);
+    border-radius: 18px;
+    margin: 10px 0 0 12px;
+    padding: 0 12px;
+    border: 1px solid rgba(203, 166, 247, 0.25);
+}
+
+#network, #bluetooth, #pulseaudio, #battery {
+    margin-right: 4px;
+}
+
+#custom-power {
+    color: #cdd6f4;
+    margin-left: 14px;
+    padding: 0 6px;
+    font-size: 15px;
+}
+
+#workspaces button {
+    padding: 0 6px;
+    color: #45475a;
+    background: transparent;
+    font-size: 10px;
+}
+
+#workspaces button.active {
+    color: #cba6f7;
+}
+
+#workspaces button:hover {
+    color: #cdd6f4;
+    background: transparent;
+}
+
+#clock {
+    color: #cdd6f4;
+    font-weight: bold;
+    padding: 0 4px;
+}
+
+#custom-notification {
+    color: #cdd6f4;
+    padding: 0 6px;
+    font-size: 15px;
+}
+
+#network {
+    color: #cdd6f4;
+    padding: 0 6px;
+}
+
+#bluetooth {
+    color: #cdd6f4;
+    padding: 0 6px;
+}
+
+#pulseaudio {
+    color: #cdd6f4;
+    padding: 0 6px;
+}
+
+#battery {
+    color: #cdd6f4;
+    padding: 0 6px;
+}
+
+#battery.warning {
+    color: #f9e2af;
+}
+
+#battery.critical {
+    color: #f38ba8;
+}
+
+#battery.charging {
+    color: #a6e3a1;
+}
+
+/* Estilos para tooltips */
+tooltip {
+    background-color: rgba(30, 30, 46, 0.95);
+    border: 1px solid rgba(203, 166, 247, 0.5);
+    border-radius: 10px;
+    padding: 8px 12px;
+    color: #cdd6f4;
+    font-size: 12px;
+}
+
+tooltip label {
+    color: #cdd6f4;
+    padding: 2px 0;
+}

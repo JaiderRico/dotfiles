@@ -1,0 +1,87 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 35,
+    "spacing": 8,
+    "font-family": "JetBrainsMono Nerd Font",
+
+    "modules-left": ["hyprland/workspaces"],
+    "modules-center": ["clock", "custom/notification"],
+    "modules-right": [
+        "network",
+        "bluetooth",
+        "pulseaudio",
+        "battery",
+        "custom/power"
+    ],
+
+    "hyprland/workspaces": {
+        "format": "{icon}",
+        "format-icons": {
+            "active": "●",
+            "default": "○"
+        }
+    },
+
+    "clock": {
+        "format": "  {:%I:%M %p}",
+        "format-alt": "{:%A, %d de %B}",
+        "tooltip-format": "{:%A, %d de %B de %Y}",
+        "on-click": "~/.config/eww/toggle-popup.sh" 
+    },
+
+    "custom/notification": {
+        "format": "{icon}",
+        "format-icons": {
+            "notification": "󱅫",
+            "none": "󰂚",
+            "dnd-notification": "󰂰",
+            "dnd-none": "󰂰"
+        },
+        "return-type": "json",
+        "exec-if": "which swaync-client",
+        "exec": "swaync-client -swb 2>/dev/null || echo '{\"text\":\"3000\",\"alt\":\"none\",\"tooltip\":\"sin gestor de notificaciones\"}'",
+        "on-click": "~/.config/eww/toggle-popup.sh",
+        "escape": true
+    },
+
+    "custom/power": {
+        "format": "⏻",
+        "tooltip": false,
+        "on-click": "~/.config/waybar/power-menu.sh"
+    },
+
+    "network": {
+        "format-wifi": " ",
+        "format-ethernet": "󰈀",
+        "format-disconnected": "󰖪",
+        "tooltip-format": "{essid} - {ipaddr}",
+        "on-click": "~/.config/waybar/network-menu.sh"
+    },
+
+    "bluetooth": {
+        "format": "󰂯",
+        "format-connected": "󰂱",
+        "format-off": "󰂲",
+        "tooltip-format": "{controller_alias}",
+        "on-click": "blueman-manager"
+    },
+
+    "pulseaudio": {
+        "format": "󰕾 {volume}%",
+        "format-muted": "󰖁",
+        "tooltip-format": "Volume: {volume}%",
+        "on-click": "pavucontrol"
+    },
+
+    "battery": {
+        "format": "{icon} {capacity}%",
+        "format-charging": "󰂄 {capacity}%",
+        "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+        "tooltip-format": "{capacity}% - {time}",
+        "states": {
+            "warning": 30,
+            "critical": 15
+        }
+    }
+}
