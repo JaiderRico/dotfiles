@@ -13,35 +13,43 @@ window#waybar {
 }
 
 .modules-left {
-    background-color: rgba(30, 30, 46, 0.80);
+    background-color: rgba(0, 0, 0, 0.60);
     border-radius: 18px;
     margin: 10px 0 0 12px;
-    padding: 0 12px;
-    border: 1px solid rgba(203, 166, 247, 0.25);
+    padding: 0 14px;
+    border: 1.5px solid rgba(203, 166, 247, 0.30);
 }
 
 .modules-center {
-    background-color: rgba(30, 30, 46, 0.80);
+    background-color: rgba(0, 0, 0, 0.60);
     border-radius: 18px;
     margin: 10px 0 0 12px;
     padding: 0 16px;
-    border: 1px solid rgba(203, 166, 247, 0.25);
+    border: 1.5px solid rgba(203, 166, 247, 0.30);
+}
+
+.modules-right {
+    background-color: rgba(0, 0, 0, 0.60);
+    border-radius: 18px;
+    margin: 10px 0 0 12px;
+    padding: 0 14px;
+    border: 1.5px solid rgba(203, 166, 247, 0.30);
 }
 
 #clock {
     margin-right: 14px;
+    color: #cdd6f4;
+    font-weight: bold;
+    padding: 0 4px;
 }
 
-.modules-right {
-    background-color: rgba(30, 30, 46, 0.80);
-    border-radius: 18px;
-    margin: 10px 0 0 12px;
-    padding: 0 12px;
-    border: 1px solid rgba(203, 166, 247, 0.25);
-}
-
-#network, #bluetooth, #pulseaudio, #battery {
+#network, #bluetooth, #pulseaudio, #battery, #custom-usb {
     margin-right: 4px;
+}
+
+#custom-usb {
+    color: #a6e3a1;
+    padding: 0 6px;
 }
 
 #custom-power {
@@ -56,6 +64,8 @@ window#waybar {
     color: #45475a;
     background: transparent;
     font-size: 10px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
 }
 
 #workspaces button.active {
@@ -64,13 +74,7 @@ window#waybar {
 
 #workspaces button:hover {
     color: #cdd6f4;
-    background: transparent;
-}
-
-#clock {
-    color: #cdd6f4;
-    font-weight: bold;
-    padding: 0 4px;
+    background: rgba(203, 166, 247, 0.15);
 }
 
 #custom-notification {
@@ -111,12 +115,11 @@ window#waybar {
     color: #a6e3a1;
 }
 
-/* Estilos para tooltips */
 tooltip {
-    background-color: rgba(30, 30, 46, 0.95);
-    border: 1px solid rgba(203, 166, 247, 0.5);
-    border-radius: 10px;
-    padding: 8px 12px;
+    background-color: rgba(0, 0, 0, 0.75);
+    border: 1.5px solid rgba(203, 166, 247, 0.35);
+    border-radius: 14px;
+    padding: 8px 14px;
     color: #cdd6f4;
     font-size: 12px;
 }

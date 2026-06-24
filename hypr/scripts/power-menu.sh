@@ -1,5 +1,4 @@
 #!/bin/bash
-choice=$(printf "󰤄 Suspender\n󰍃 Cerrar sesión\n󰜉 Reiniciar\n󰐥 Apagar" | rofi -dmenu -no-custom -theme-str 'entry { enabled: false;} mainbox { children: [listview]; }')
 case "$choice" in
     *Suspender) systemctl suspend ;;
     *"Cerrar sesión") hyprctl dispatch exit ;;

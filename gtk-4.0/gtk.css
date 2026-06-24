@@ -1,1 +1,96 @@
-/usr/share/themes/Yaru-dark/gtk-4.0/gtk.css
+/* Nautilus — Catppuccin Mocha + Negro transparente */
+
+@define-color theme_selected_bg_color rgba(203,166,247,0.25);
+
+window.nautilus-window,
+window.nautilus-window .toolbar,
+window.nautilus-window headerbar {
+    background-color: rgba(0,0,0,0.84);
+}
+
+/* Sidebar - múltiples selectores */
+window.nautilus-window .sidebar,
+window.nautilus-window box.sidebar,
+window.nautilus-window > .sidebar,
+window.nautilus-window .places-sidebar,
+window.nautilus-window .navigation-sidebar,
+window.nautilus-window NautilusPlacesSidebar,
+window.nautilus-window AdwNavigationSidebar,
+window.nautilus-window box.navigation-sidebar,
+window.nautilus-window .sidebar-pane,
+.nautilus-window .navigation-sidebar,
+.nautilus-window .sidebar {
+    background-color: rgba(0,0,0,0.76);
+    border-right: 1px solid rgba(203,166,247,0.15);
+}
+
+window.nautilus-window .sidebar .view:selected,
+window.nautilus-window .sidebar row:selected {
+    background-color: rgba(203,166,247,0.22);
+}
+
+window.nautilus-window .sidebar row:hover {
+    background-color: rgba(203,166,247,0.08);
+}
+
+window.nautilus-window .sidebar label,
+window.nautilus-window .sidebar .sidebar-icon {
+    color: #cdd6f4;
+}
+
+/* File area */
+window.nautilus-window .view:selected {
+    background-color: rgba(203,166,247,0.20);
+}
+
+/* Buttons */
+window.nautilus-window button {
+    background-color: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+window.nautilus-window button:hover {
+    background-color: rgba(203,166,247,0.12);
+}
+
+window.nautilus-window .path-bar button:checked {
+    background-color: rgba(203,166,247,0.18);
+    border-color: rgba(203,166,247,0.30);
+}
+
+/* Menús contextuales */
+popover.background,
+popover.background menu,
+menu, .menu, .context-menu {
+    background: rgba(0, 0, 0, 0.65) !important;
+    border: 1.5px solid rgba(203, 166, 247, 0.30);
+    border-radius: 14px;
+    padding: 4px;
+}
+
+popover.background *,
+menu * {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+}
+
+menuitem {
+    padding: 6px 14px;
+    color: #cdd6f4;
+    border-radius: 10px;
+}
+
+menuitem:hover {
+    background: rgba(203, 166, 247, 0.15) !important;
+}
+
+menuitem separator {
+    background: rgba(203, 166, 247, 0.12) !important;
+    margin: 4px 8px;
+    min-height: 1px;
+}
+
+menuitem arrow {
+    color: #cba6f7 !important;
+}

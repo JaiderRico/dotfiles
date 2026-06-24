@@ -1,0 +1,22 @@
+# Sensitive files
+.ssh/
+*.pem
+*.key
+*.gpg
+*.asc
+
+# Temporary / cache
+*.bak
+*.swp
+*.swo
+*~
+.cache/
+thumbnails/
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Large media / ISOs (not config)
+*.iso
+*.img

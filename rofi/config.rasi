@@ -1,2 +1,7 @@
-@theme "rounded-nord-dark"
+@theme "catppuccin-mocha"
 
+configuration {
+    show-icons: true;
+    icon-theme: "Papirus";
+    drun-icon-theme: "Papirus";
+}

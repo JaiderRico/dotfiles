@@ -1,22 +1,48 @@
 window {
-    background-color: rgba(17, 17, 27, 0.88);
-    border-radius: 20px 20px 0 0;
-    border: 1px solid rgba(137, 180, 250, 0.18);
+    background-color: rgba(0, 0, 0, 0.75);
+    border-radius: 20px;
+    border: 1.5px solid rgba(203, 166, 247, 0.35);
     color: #cdd6f4;
+    padding: 0;
 }
+
 calendar {
     background-color: transparent;
     color: #cdd6f4;
     border: none;
+    padding: 8px;
 }
+
 calendar:selected {
-    background-color: rgba(137, 180, 250, 0.35);
-    border-radius: 6px;
+    background-color: rgba(203, 166, 247, 0.25);
+    color: #cba6f7;
+    border-radius: 8px;
 }
+
 calendar.header {
-    color: #89b4fa;
+    color: #cba6f7;
     font-weight: bold;
 }
+
 calendar.highlight {
-    color: #89b4fa;
+    color: #cba6f7;
+}
+
+scale trough {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    min-height: 8px;
+}
+
+scale trough highlight {
+    background-color: rgba(203, 166, 247, 0.50);
+    border-radius: 10px;
+}
+
+scale slider {
+    background-color: #cba6f7;
+    border-radius: 999px;
+    min-width: 16px;
+    min-height: 16px;
+    margin: -4px;
 }

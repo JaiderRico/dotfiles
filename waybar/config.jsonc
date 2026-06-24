@@ -10,8 +10,8 @@
     "modules-right": [
         "network",
         "bluetooth",
-        "pulseaudio",
         "battery",
+        "custom/usb",
         "custom/power"
     ],
 
@@ -25,9 +25,8 @@
 
     "clock": {
         "format": "  {:%I:%M %p}",
-        "format-alt": "{:%A, %d de %B}",
         "tooltip-format": "{:%A, %d de %B de %Y}",
-        "on-click": "~/.config/eww/toggle-popup.sh" 
+        "on-click": "~/.config/eww/toggle-popup.sh"
     },
 
     "custom/notification": {
@@ -45,6 +44,13 @@
         "escape": true
     },
 
+    "custom/usb": {
+        "return-type": "json",
+        "exec": "~/.config/waybar/usb-check.sh",
+        "on-click": "~/.config/waybar/usb-eject.sh",
+        "escape": true
+    },
+
     "custom/power": {
         "format": "⏻",
         "tooltip": false,
@@ -56,7 +62,7 @@
         "format-ethernet": "󰈀",
         "format-disconnected": "󰖪",
         "tooltip-format": "{essid} - {ipaddr}",
-        "on-click": "~/.config/waybar/network-menu.sh"
+        "on-click": "~/.config/waybar/wifi-menu.sh"
     },
 
     "bluetooth": {
@@ -64,7 +70,7 @@
         "format-connected": "󰂱",
         "format-off": "󰂲",
         "tooltip-format": "{controller_alias}",
-        "on-click": "blueman-manager"
+        "on-click": "~/.config/waybar/bluetooth-menu.sh"
     },
 
     "pulseaudio": {

@@ -1,0 +1,146 @@
+* {
+  all: unset;
+  font-family: "JetBrainsMono Nerd Font", "Symbols Nerd Font", sans-serif;
+  font-size: 13px;
+  color: #cdd6f4;
+}
+
+.popup-container {
+  background-color: rgba(0, 0, 0, 0.65);
+  border: 1.5px solid rgba(203, 166, 247, 0.35);
+  border-radius: 24px;
+  padding: 20px;
+}
+
+.cal-section {
+  min-width: 240px;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+calendar {
+  background-color: transparent;
+  color: #cdd6f4;
+  border: none;
+  padding: 2px;
+  font-size: 13px;
+
+  &:selected {
+    background-color: rgba(203, 166, 247, 0.25);
+    color: #cba6f7;
+    border-radius: 6px;
+  }
+
+  &.header {
+    background-color: transparent;
+    color: #cdd6f4;
+    font-weight: bold;
+    border: none;
+  }
+
+  &.button {
+    color: #cba6f7;
+    border-radius: 4px;
+
+    &:hover {
+      background-color: rgba(203, 166, 247, 0.15);
+    }
+  }
+
+  &:indeterminate {
+    color: rgba(205, 214, 244, 0.25);
+  }
+
+  &.highlight {
+    color: #cba6f7;
+  }
+}
+
+.notif-section {
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.notif-header {
+  margin-bottom: 8px;
+}
+
+.notif-header-title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: #a6adc8;
+}
+
+.dnd-btn {
+  background: none;
+  border: none;
+  padding: 2px 6px;
+  font-size: 15px;
+  color: #9399b2;
+  transition: all 0.15s ease;
+
+  &:hover {
+    color: #cdd6f4;
+  }
+}
+
+.clear-btn {
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 2px 8px;
+  font-size: 10px;
+  color: #9399b2;
+  margin-left: 6px;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: rgba(203, 166, 247, 0.12);
+    border-color: rgba(203, 166, 247, 0.25);
+    color: #cdd6f4;
+  }
+}
+
+.notif-card {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 10px 14px;
+  transition: all 0.1s ease;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(203, 166, 247, 0.18);
+  }
+}
+
+.card-app {
+  font-size: 10px;
+  font-weight: 600;
+  color: #cba6f7;
+  letter-spacing: 0.3px;
+  margin-bottom: 1px;
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #cdd6f4;
+}
+
+.card-body {
+  font-size: 11px;
+  color: #a6adc8;
+  margin-top: 1px;
+}
+
+.card-time {
+  font-size: 10px;
+  color: #585b70;
+  margin-left: 12px;
+}

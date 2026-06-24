@@ -4,84 +4,109 @@
 }
 
 .control-center {
-    background-color: rgba(17, 17, 27, 0.88);
-    border-radius: 0 0 20px 20px;
-    border: 1px solid rgba(137, 180, 250, 0.18);
-    padding: 8px;
-    margin: 0;
-
-    /* REEMPLAZA LAS LÍNEAS DE ALTURA POR ESTAS: */
-    min-height: 0px;            /* Fuerza a GTK a permitir que el contenedor colapse */
-    height: min-content;        /* Se ajusta estrictamente al tamaño mínimo de los elementos hijos */
-    max-height: 500px;          /* Evita que se salga de la pantalla si hay muchas notificaciones */
+    background-color: rgba(0, 0, 0, 0.72);
+    border: 1.5px solid rgba(203, 166, 247, 0.30);
+    border-radius: 20px;
+    padding: 12px;
+    margin: 8px;
+    min-height: 0px;
+    height: min-content;
+    max-height: 500px;
     overflow-y: auto;
 }
 
 .control-center .notification-row .notification-background {
-    background-color: rgba(24, 24, 37, 0.85);
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.04);
     border-radius: 16px;
     margin: 6px 0;
-    padding: 8px;
+    padding: 10px;
+    transition: all 0.2s ease;
+}
+
+.control-center .notification-row .notification-background:hover {
+    border-color: rgba(203, 166, 247, 0.20);
 }
 
 .notification-row .notification-background .notification-default-action {
-    border-radius: 16px;
+    border-radius: 14px;
 }
 
 .notification-row .close-button {
-    background-color: rgba(137, 180, 250, 0.2);
+    background-color: rgba(203, 166, 247, 0.15);
     color: #cdd6f4;
     border-radius: 999px;
     padding: 2px;
 }
 
 .notification-row .close-button:hover {
-    background-color: rgba(137, 180, 250, 0.4);
+    background-color: rgba(203, 166, 247, 0.30);
+}
+
+.notification-row .notification-background {
+    background-color: rgba(0, 0, 0, 0.75);
+    border: 1.5px solid rgba(203, 166, 247, 0.20);
+    border-radius: 16px;
+    padding: 6px 10px;
+    margin: 4px 8px;
 }
 
 .notification-content .summary {
     color: #cdd6f4;
     font-weight: bold;
+    font-size: 12px;
 }
 
 .notification-content .body {
     color: #bac2de;
+    font-size: 11px;
 }
 
 .notification-content .time {
-    color: #89b4fa;
+    color: #cba6f7;
     font-size: 11px;
+}
+
+.notification-default-action {
+    padding: 0;
+    margin: 0;
 }
 
 .widget-title {
     color: #cdd6f4;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
     padding: 6px 10px;
 }
 
 .widget-title button {
-    background-color: rgba(137, 180, 250, 0.2);
-    color: #89b4fa;
-    border-radius: 12px;
+    background-color: rgba(203, 166, 247, 0.15);
+    color: #cba6f7;
+    border-radius: 10px;
     padding: 4px 12px;
+    transition: all 0.15s ease;
+}
+
+.widget-title button:hover {
+    background-color: rgba(203, 166, 247, 0.25);
 }
 
 .widget-dnd {
-    background-color: rgba(24, 24, 37, 0.85);
-    border-radius: 16px;
-    padding: 8px;
-    margin: 4px 0 8px 0;        /* Añade un poco de espacio arriba y abajo */
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 14px;
+    padding: 10px;
+    margin: 4px 0 8px;
     color: #cdd6f4;
 }
 
 .widget-dnd > switch {
     border-radius: 999px;
-    background-color: rgba(137, 180, 250, 0.2);
+    background-color: rgba(255, 255, 255, 0.10);
 }
 
 .widget-dnd > switch:checked {
-    background-color: #89b4fa;
+    background-color: #cba6f7;
 }
 
 .widget-dnd > switch slider {

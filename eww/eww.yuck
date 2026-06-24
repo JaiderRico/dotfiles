@@ -1,0 +1,96 @@
+(defvar notif_0 "")
+(defvar notif_1 "")
+(defvar notif_2 "")
+(defvar notif_3 "")
+(defvar notif_4 "")
+
+(defpoll dnd_state :interval "1s"
+  "swaync-client -D")
+
+(defpoll notifs_poll :interval "5s"
+  "/home/jaider/.config/eww/notifs-poller.py")
+
+(defwindow calendar_popup
+  :monitor 0
+  :geometry (geometry
+    :x "50%"
+    :y "40px"
+    :width "800px"
+    :anchor "top center")
+  :stacking "fg"
+  :windowtype "dialog"
+  :wm-ignore false
+  :transition "slideDown"
+  (box :orientation "vertical"
+       :class "popup-container"
+       :spacing 0
+       (label :visible false :text "${notifs_poll}")
+
+       ;; Main row: Calendar | Notifications
+       (box :orientation "horizontal"
+            :class "main-row"
+            :space-evenly false
+            :spacing 16
+
+         ;; Left: Calendar
+         (box :orientation "vertical"
+              :class "cal-section"
+              (calendar :class "calendar-widget"))
+
+         ;; Right: Notifications
+         (box :orientation "vertical"
+              :class "notif-section"
+              :hexpand true
+
+           ;; Header: title + DND toggle + clear
+           (box :orientation "horizontal"
+                :class "notif-header"
+                :space-evenly false
+                (label :class "notif-header-title" :text "Notificaciones" :hexpand true :halign "start")
+                (button :class "dnd-btn"
+                        :onclick "swaync-client -d"
+                        (label :text {dnd_state == "true" ? "🔕" : "🔔"}))
+                (button :class "dnd-btn"
+                        :onclick "rm -f $HOME/.cache/eww-notifications.json && eww update notif_0= notif_1= notif_2= notif_3= notif_4= && swaync-client --close-all"
+                        "🗑"))
+
+           ;; Notification cards
+           (scroll :orientation "vertical"
+             (box :orientation "vertical"
+                  :space-evenly false
+                  :spacing 6
+               (box :class "notif-card" :visible {notif_0 != ""}
+                 (label :class "card-app" :visible {notif_0.app != ""} :text "${notif_0.app}")
+                 (box :orientation "horizontal" :space-evenly false
+                   (box :orientation "vertical" :hexpand true
+                     (label :class "card-title" :text "${notif_0.title}" :wrap true :xalign 0)
+                     (label :class "card-body" :text "${notif_0.body}" :wrap true :xalign 0))
+                   (label :class "card-time" :text "${notif_0.time}" :valign "start" :halign "end")))
+               (box :class "notif-card" :visible {notif_1 != ""}
+                 (label :class "card-app" :visible {notif_1.app != ""} :text "${notif_1.app}")
+                 (box :orientation "horizontal" :space-evenly false
+                   (box :orientation "vertical" :hexpand true
+                     (label :class "card-title" :text "${notif_1.title}" :wrap true :xalign 0)
+                     (label :class "card-body" :text "${notif_1.body}" :wrap true :xalign 0))
+                   (label :class "card-time" :text "${notif_1.time}" :valign "start" :halign "end")))
+               (box :class "notif-card" :visible {notif_2 != ""}
+                 (label :class "card-app" :visible {notif_2.app != ""} :text "${notif_2.app}")
+                 (box :orientation "horizontal" :space-evenly false
+                   (box :orientation "vertical" :hexpand true
+                     (label :class "card-title" :text "${notif_2.title}" :wrap true :xalign 0)
+                     (label :class "card-body" :text "${notif_2.body}" :wrap true :xalign 0))
+                   (label :class "card-time" :text "${notif_2.time}" :valign "start" :halign "end")))
+               (box :class "notif-card" :visible {notif_3 != ""}
+                 (label :class "card-app" :visible {notif_3.app != ""} :text "${notif_3.app}")
+                 (box :orientation "horizontal" :space-evenly false
+                   (box :orientation "vertical" :hexpand true
+                     (label :class "card-title" :text "${notif_3.title}" :wrap true :xalign 0)
+                     (label :class "card-body" :text "${notif_3.body}" :wrap true :xalign 0))
+                   (label :class "card-time" :text "${notif_3.time}" :valign "start" :halign "end")))
+               (box :class "notif-card" :visible {notif_4 != ""}
+                 (label :class "card-app" :visible {notif_4.app != ""} :text "${notif_4.app}")
+                 (box :orientation "horizontal" :space-evenly false
+                   (box :orientation "vertical" :hexpand true
+                     (label :class "card-title" :text "${notif_4.title}" :wrap true :xalign 0)
+                     (label :class "card-body" :text "${notif_4.body}" :wrap true :xalign 0))
+                   (label :class "card-time" :text "${notif_4.time}" :valign "start" :halign "end")))))))))

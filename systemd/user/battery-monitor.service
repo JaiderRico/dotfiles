@@ -1,0 +1,11 @@
+[Unit]
+Description=Battery monitor
+
+[Service]
+Type=simple
+ExecStart=/home/jaider/.config/hypr/scripts/battery-monitor.sh
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
