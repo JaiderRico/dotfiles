@@ -16,13 +16,15 @@ from gi.repository import Gtk, Gdk, GLib, GdkPixbuf
 
 LOCK_FILE = '/tmp/hypr-overview.lock'
 TMP_DIR = os.path.join(tempfile.gettempdir(), 'hypr-overview')
+MONITOR = None
 
 
-if os.path.exists(LOCK_FILE):
+try:
+    lock_fd = os.open(LOCK_FILE, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    os.write(lock_fd, str(os.getpid()).encode())
+    os.close(lock_fd)
+except FileExistsError:
     sys.exit(0)
-
-with open(LOCK_FILE, 'w') as f:
-    f.write(str(os.getpid()))
 
 
 def hyprctl(cmd):
@@ -36,13 +38,38 @@ def hyprctl_json(cmd):
     return json.loads(hyprctl(cmd + ' -j'))
 
 
-def capture_window(addr, x, y, w, h):
-    out = os.path.join(TMP_DIR, f'{addr}.png')
-    subprocess.run(
-        ['grim', '-g', f'{x},{y} {w}x{h}', out],
-        capture_output=True, text=True
-    )
-    return out if os.path.exists(out) else None
+def capture_workspace(ws_id, windows, active_ws):
+    if ws_id != active_ws:
+        hyprctl(f'dispatch workspace {ws_id}')
+
+    full = os.path.join(TMP_DIR, f'ws_{ws_id}_full.png')
+    subprocess.run(['grim', full], capture_output=True, text=True)
+    if not os.path.exists(full):
+        return
+
+    from gi.repository import GdkPixbuf
+    full_pb = GdkPixbuf.Pixbuf.new_from_file(full)
+
+    for win in windows:
+        addr = win.get('address', '')
+        x, y = win.get('at', [0, 0])
+        w, h = win.get('size', [100, 100])
+        if w <= 0 or h <= 0:
+            continue
+        try:
+            crop = GdkPixbuf.Pixbuf.new(
+                GdkPixbuf.Colorspace.RGB, True, 8, w, h
+            )
+            full_pb.copy_area(x, y, w, h, crop, 0, 0)
+            out = os.path.join(TMP_DIR, f'{addr}.png')
+            crop.savev(out, 'png', [], [])
+        except Exception:
+            pass
+
+    try:
+        os.unlink(full)
+    except OSError:
+        pass
 
 
 ICON_MAP = {
@@ -171,13 +198,8 @@ class WindowOverview(Gtk.Window):
 
         self.connect('key-press-event', self.on_key_press)
         self.connect('destroy', lambda _: self.cleanup())
-        self.connect('realize', self._on_realize)
 
         self.build_ui()
-
-    def _on_realize(self, widget):
-        if os.path.exists(LOCK_FILE):
-            os.unlink(LOCK_FILE)
 
     def build_ui(self):
         overlay = Gtk.Overlay()
@@ -196,7 +218,8 @@ class WindowOverview(Gtk.Window):
         title.set_name("overview-title")
         main_box.pack_start(title, False, False, 0)
 
-        active_ws = hyprctl_json('activeworkspace')['id']
+        self.active_ws = hyprctl_json('activeworkspace')['id']
+        active_ws = self.active_ws
 
         self.windows = hyprctl_json('clients')
         workspaces = {}
@@ -261,7 +284,8 @@ class WindowOverview(Gtk.Window):
 
                 self.cards[addr] = {
                     'img': img, 'x': x, 'y': y, 'w': w, 'h': h,
-                    'is_active_ws': is_active, 'class': cls, 'title': title
+                    'ws_id': ws_id, 'is_active_ws': is_active,
+                    'class': cls, 'title': title
                 }
 
             hbox.pack_start(ws_box, False, False, 0)
@@ -282,16 +306,62 @@ class WindowOverview(Gtk.Window):
         self.capture_screenshots()
 
     def capture_screenshots(self):
+        active_ws = self.active_ws
+        workspaces = {}
         for addr, info in self.cards.items():
-            if info['is_active_ws']:
-                t = threading.Thread(
-                    target=self._capture_one,
-                    args=(addr, info),
-                    daemon=True
+            ws = info['ws_id']
+            if ws not in workspaces:
+                workspaces[ws] = []
+            workspaces[ws].append((addr, info))
+
+        for ws_id in sorted(workspaces.keys()):
+            wins = [(addr, info) for addr, info in workspaces[ws_id]]
+            t = threading.Thread(
+                target=self._capture_ws,
+                args=(ws_id, wins, active_ws),
+                daemon=True
+            )
+            t.start()
+
+    def _capture_ws(self, ws_id, wins, active_ws):
+        if ws_id == active_ws:
+            for addr, info in wins:
+                out = os.path.join(TMP_DIR, f'{addr}.png')
+                subprocess.run(
+                    ['grim', '-g', f'{info["x"]},{info["y"]} {info["w"]}x{info["h"]}', out],
+                    capture_output=True, text=True
                 )
-                t.start()
-            else:
+                if os.path.exists(out):
+                    GLib.idle_add(self._set_image, addr, out)
+            return
+
+        hyprctl(f'dispatch workspace {ws_id}')
+        full = os.path.join(TMP_DIR, f'ws_{ws_id}_full.png')
+        subprocess.run(['grim', full], capture_output=True, text=True)
+
+        if os.path.exists(full):
+            try:
+                full_pb = GdkPixbuf.Pixbuf.new_from_file(full)
+                for addr, info in wins:
+                    x, y, w, h = info['x'], info['y'], info['w'], info['h']
+                    if w <= 0 or h <= 0:
+                        continue
+                    crop = GdkPixbuf.Pixbuf.new(
+                        GdkPixbuf.Colorspace.RGB, True, 8, w, h
+                    )
+                    full_pb.copy_area(x, y, w, h, crop, 0, 0)
+                    out2 = os.path.join(TMP_DIR, f'{addr}.png')
+                    crop.savev(out2, 'png', [], [])
+                    GLib.idle_add(self._set_image, addr, out2)
+                os.unlink(full)
+            except Exception:
+                for addr, info in wins:
+                    GLib.idle_add(self._set_icon_placeholder, addr, info['class'])
+        else:
+            for addr, info in wins:
                 GLib.idle_add(self._set_icon_placeholder, addr, info['class'])
+
+        hyprctl(f'dispatch workspace {active_ws}')
 
     def _set_icon_placeholder(self, addr, cls):
         if addr not in self.cards:
@@ -299,11 +369,6 @@ class WindowOverview(Gtk.Window):
         pixbuf = make_placeholder_pixbuf(cls)
         self.cards[addr]['img'].set_from_pixbuf(pixbuf)
         return False
-
-    def _capture_one(self, addr, info):
-        path = capture_window(addr, info['x'], info['y'], info['w'], info['h'])
-        if path:
-            GLib.idle_add(self._set_image, addr, path)
 
     def _set_image(self, addr, path):
         if addr not in self.cards:
