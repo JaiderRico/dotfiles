@@ -60,10 +60,11 @@ window#waybar {
 }
 
 #workspaces button {
-    padding: 0 6px;
+    padding: 0 8px;
     color: #45475a;
     background: transparent;
-    font-size: 10px;
+    font-size: 14px;
+    font-weight: bold;
     border-radius: 12px;
     transition: all 0.2s ease;
 }
