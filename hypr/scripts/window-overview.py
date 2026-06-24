@@ -3,6 +3,7 @@
 
 import json
 import os
+import signal
 import subprocess
 import sys
 import tempfile
@@ -19,11 +20,38 @@ TMP_DIR = os.path.join(tempfile.gettempdir(), 'hypr-overview')
 MONITOR = None
 
 
+def _clean_lock():
+    if os.path.exists(LOCK_FILE):
+        try:
+            with open(LOCK_FILE) as f:
+                my_pid = int(f.read().strip())
+            if my_pid == os.getpid():
+                os.unlink(LOCK_FILE)
+        except (OSError, ValueError):
+            pass
+
+signal.signal(signal.SIGTERM, lambda *_: (_clean_lock(), sys.exit(0)))
+signal.signal(signal.SIGINT, lambda *_: (_clean_lock(), sys.exit(0)))
+
 try:
+    if os.path.exists(LOCK_FILE):
+        with open(LOCK_FILE) as f:
+            old_pid = int(f.read().strip())
+        try:
+            os.kill(old_pid, 0)
+            sys.exit(0)
+        except ProcessLookupError:
+            pass
+        try:
+            os.unlink(LOCK_FILE)
+        except OSError:
+            pass
     lock_fd = os.open(LOCK_FILE, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
     os.write(lock_fd, str(os.getpid()).encode())
     os.close(lock_fd)
 except FileExistsError:
+    sys.exit(0)
+except (OSError, ValueError):
     sys.exit(0)
 
 
@@ -390,11 +418,7 @@ class WindowOverview(Gtk.Window):
             Gtk.main_quit()
 
     def cleanup(self):
-        if os.path.exists(LOCK_FILE):
-            try:
-                os.unlink(LOCK_FILE)
-            except OSError:
-                pass
+        _clean_lock()
         if os.path.isdir(TMP_DIR):
             for f in os.listdir(TMP_DIR):
                 try:
