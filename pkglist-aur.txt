@@ -1,0 +1,13 @@
+catppuccin-cursors-mocha
+catppuccin-gtk-theme-mocha
+eww-git
+libadwaita-yaru-git
+onlyoffice-bin
+papirus-folders-catppuccin-git
+paru
+paru-debug
+yaru-gtk-theme
+yaru-icon-theme
+yay
+yay-debug
+zapzap
