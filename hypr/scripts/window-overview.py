@@ -127,6 +127,8 @@ class WindowOverview(Gtk.Window):
         title.set_name("overview-title")
         main_box.pack_start(title, False, False, 0)
 
+        active_ws = hyprctl_json('activeworkspace')['id']
+
         self.windows = hyprctl_json('clients')
         workspaces = {}
         for w in self.windows:
@@ -148,10 +150,12 @@ class WindowOverview(Gtk.Window):
 
         self.cards = {}
         for ws_id in sorted(workspaces.keys()):
+            is_active = ws_id == active_ws
             ws_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
             ws_box.get_style_context().add_class('ws-column')
 
-            ws_label = Gtk.Label(label=f"Workspace {ws_id}", xalign=0)
+            badge = "  ●" if is_active else ""
+            ws_label = Gtk.Label(label=f"Workspace {ws_id}{badge}", xalign=0)
             ws_label.get_style_context().add_class('ws-label')
             ws_box.pack_start(ws_label, False, False, 0)
 
@@ -182,7 +186,10 @@ class WindowOverview(Gtk.Window):
                 box.add(vbox)
                 ws_box.pack_start(box, False, False, 0)
 
-                self.cards[addr] = {'img': img, 'x': x, 'y': y, 'w': w, 'h': h}
+                self.cards[addr] = {
+                    'img': img, 'x': x, 'y': y, 'w': w, 'h': h,
+                    'is_active_ws': is_active, 'class': cls
+                }
 
             hbox.pack_start(ws_box, False, False, 0)
 
@@ -203,12 +210,32 @@ class WindowOverview(Gtk.Window):
 
     def capture_screenshots(self):
         for addr, info in self.cards.items():
+            if not info['is_active_ws']:
+                GLib.idle_add(self._set_placeholder, addr, info['class'])
+                continue
             t = threading.Thread(
                 target=self._capture_one,
                 args=(addr, info),
                 daemon=True
             )
             t.start()
+
+    def _set_placeholder(self, addr, cls):
+        if addr not in self.cards:
+            return False
+        w, h = 240, 160
+        pixbuf = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, w, h)
+        pixbuf.fill(0x25252aee)
+        initial = cls[0].upper() if cls else "?"
+        scaled = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, 80, 80)
+        scaled.fill(0x3b3b44aa)
+        scaled_w = 80
+        scaled_h = 80
+        src_x = max(0, (w - scaled_w) // 2)
+        src_y = max(0, (h - scaled_h) // 2)
+        scaled.copy_area(0, 0, scaled_w, scaled_h, pixbuf, src_x, src_y)
+        self.cards[addr]['img'].set_from_pixbuf(pixbuf)
+        return False
 
     def _capture_one(self, addr, info):
         path = capture_window(addr, info['x'], info['y'], info['w'], info['h'])
