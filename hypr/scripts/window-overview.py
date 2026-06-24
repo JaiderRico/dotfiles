@@ -14,7 +14,15 @@ gi.require_version('GdkPixbuf', '2.0')
 from gi.repository import Gtk, Gdk, GLib, GdkPixbuf
 
 
+LOCK_FILE = '/tmp/hypr-overview.lock'
 TMP_DIR = os.path.join(tempfile.gettempdir(), 'hypr-overview')
+
+
+if os.path.exists(LOCK_FILE):
+    sys.exit(0)
+
+with open(LOCK_FILE, 'w') as f:
+    f.write(str(os.getpid()))
 
 
 def hyprctl(cmd):
@@ -35,6 +43,55 @@ def capture_window(addr, x, y, w, h):
         capture_output=True, text=True
     )
     return out if os.path.exists(out) else None
+
+
+ICON_MAP = {
+    'firefox': 'firefox',
+    'kitty': 'terminal',
+    'code-oss': 'visual-studio-code',
+    'code': 'visual-studio-code',
+    'onlyoffice': 'onlyoffice',  # might not exist, fallback to document
+    'zapzap': 'telegram',  # close enough
+    'nautilus': 'folder',
+    'thunar': 'folder',
+    'vlc': 'vlc',
+    'rofi': 'system-run',
+    'eww': 'system-run',
+    'waybar': 'system-run',
+    'firefox': 'firefox',
+    'dunst': 'dialog-information',
+    'swaync': 'dialog-information',
+    'blueman-manager': 'bluetooth',
+    'pavucontrol': 'multimedia-volume-control',
+}
+
+
+def get_app_icon(cls):
+    name = ICON_MAP.get(cls.lower(), 'application-x-executable')
+    theme = Gtk.IconTheme.get_default()
+    icon = theme.lookup_icon(name, 64, 0)
+    if icon:
+        return icon.load_icon()
+    icon = theme.lookup_icon('application-x-executable', 64, 0)
+    if icon:
+        return icon.load_icon()
+    return None
+
+
+def make_placeholder_pixbuf(cls, w=240, h=160):
+    pixbuf = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, w, h)
+    pixbuf.fill(0x1e1e2ecc)
+
+    icon_pixbuf = get_app_icon(cls)
+    if icon_pixbuf:
+        sw = min(icon_pixbuf.get_width(), 60)
+        sh = min(icon_pixbuf.get_height(), 60)
+        scaled = icon_pixbuf.scale_simple(sw, sh, GdkPixbuf.InterpType.BILINEAR)
+        sx = (w - sw) // 2
+        sy = (h - sh) // 2 - 10
+        scaled.copy_area(0, 0, sw, sh, pixbuf, sx, sy)
+
+    return pixbuf
 
 
 class WindowOverview(Gtk.Window):
@@ -58,44 +115,53 @@ class WindowOverview(Gtk.Window):
 
         css = b"""
         .overview-bg {
-            background-color: rgba(0, 0, 0, 0.78);
+            background-color: rgba(0, 0, 0, 0.72);
         }
         #overview-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             color: #cdd6f4;
+            margin-bottom: 4px;
         }
         .ws-column {
             background-color: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 16px;
-            padding: 12px;
+            border-radius: 18px;
+            padding: 14px;
+        }
+        .ws-column.active {
+            border-color: rgba(203, 166, 247, 0.25);
+            background-color: rgba(203, 166, 247, 0.04);
         }
         .ws-label {
             font-size: 11px;
             font-weight: bold;
+            color: #585b70;
+        }
+        .ws-label.active {
             color: #cba6f7;
-            margin-bottom: 8px;
         }
         .window-card {
-            background-color: rgba(255, 255, 255, 0.06);
-            border: 2px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            padding: 6px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 5px;
         }
         .window-card:hover {
-            background-color: rgba(203, 166, 247, 0.12);
-            border-color: rgba(203, 166, 247, 0.35);
+            background-color: rgba(203, 166, 247, 0.10);
+            border-color: rgba(203, 166, 247, 0.30);
         }
         .win-title {
             font-size: 11px;
             color: #cdd6f4;
+            padding: 2px 4px 0;
         }
         .hint-label {
             font-size: 11px;
             color: #585b70;
         }
         """
+
         style_provider = Gtk.CssProvider()
         style_provider.load_from_data(css)
         Gtk.StyleContext.add_provider_for_screen(
@@ -103,19 +169,22 @@ class WindowOverview(Gtk.Window):
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
-        self.loading_count = 0
-
         self.connect('key-press-event', self.on_key_press)
         self.connect('destroy', lambda _: self.cleanup())
+        self.connect('realize', self._on_realize)
 
         self.build_ui()
+
+    def _on_realize(self, widget):
+        if os.path.exists(LOCK_FILE):
+            os.unlink(LOCK_FILE)
 
     def build_ui(self):
         overlay = Gtk.Overlay()
         self.add(overlay)
         overlay.get_style_context().add_class('overview-bg')
 
-        main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
+        main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=16)
         main_box.set_valign(Gtk.Align.CENTER)
         main_box.set_halign(Gtk.Align.CENTER)
         main_box.set_margin_top(50)
@@ -153,10 +222,14 @@ class WindowOverview(Gtk.Window):
             is_active = ws_id == active_ws
             ws_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
             ws_box.get_style_context().add_class('ws-column')
+            if is_active:
+                ws_box.get_style_context().add_class('active')
 
-            badge = "  ●" if is_active else ""
-            ws_label = Gtk.Label(label=f"Workspace {ws_id}{badge}", xalign=0)
+            badge = "● " if is_active else "  "
+            ws_label = Gtk.Label(label=f"{badge}Workspace {ws_id}", xalign=0)
             ws_label.get_style_context().add_class('ws-label')
+            if is_active:
+                ws_label.get_style_context().add_class('active')
             ws_box.pack_start(ws_label, False, False, 0)
 
             for win in workspaces[ws_id]:
@@ -170,15 +243,15 @@ class WindowOverview(Gtk.Window):
                 box.get_style_context().add_class('window-card')
                 box.connect('button-press-event', self.on_window_click, addr)
 
-                vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
+                vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=3)
 
                 img = Gtk.Image()
-                img.set_size_request(240, -1)
+                img.set_size_request(200, -1)
                 vbox.pack_start(img, False, False, 0)
 
                 t_label = Gtk.Label(
-                    label=title if len(title) < 50 else title[:47] + '...',
-                    xalign=0, wrap=True, max_width_chars=30
+                    label=title if len(title) < 45 else title[:42] + '...',
+                    xalign=0, wrap=True, max_width_chars=28
                 )
                 t_label.get_style_context().add_class('win-title')
                 vbox.pack_start(t_label, False, False, 0)
@@ -188,7 +261,7 @@ class WindowOverview(Gtk.Window):
 
                 self.cards[addr] = {
                     'img': img, 'x': x, 'y': y, 'w': w, 'h': h,
-                    'is_active_ws': is_active, 'class': cls
+                    'is_active_ws': is_active, 'class': cls, 'title': title
                 }
 
             hbox.pack_start(ws_box, False, False, 0)
@@ -196,9 +269,9 @@ class WindowOverview(Gtk.Window):
         scroll.add(hbox)
         main_box.pack_start(scroll, True, True, 0)
 
-        hint = Gtk.Label(label="Click en una ventana para enfocarla  ·  Escape/q para cerrar")
+        hint = Gtk.Label(label="Click en una ventana · Escape/q para cerrar")
         hint.get_style_context().add_class('hint-label')
-        hint.set_margin_top(10)
+        hint.set_margin_top(8)
         main_box.pack_start(hint, False, False, 0)
 
         overlay.add(main_box)
@@ -210,30 +283,20 @@ class WindowOverview(Gtk.Window):
 
     def capture_screenshots(self):
         for addr, info in self.cards.items():
-            if not info['is_active_ws']:
-                GLib.idle_add(self._set_placeholder, addr, info['class'])
-                continue
-            t = threading.Thread(
-                target=self._capture_one,
-                args=(addr, info),
-                daemon=True
-            )
-            t.start()
+            if info['is_active_ws']:
+                t = threading.Thread(
+                    target=self._capture_one,
+                    args=(addr, info),
+                    daemon=True
+                )
+                t.start()
+            else:
+                GLib.idle_add(self._set_icon_placeholder, addr, info['class'])
 
-    def _set_placeholder(self, addr, cls):
+    def _set_icon_placeholder(self, addr, cls):
         if addr not in self.cards:
             return False
-        w, h = 240, 160
-        pixbuf = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, w, h)
-        pixbuf.fill(0x25252aee)
-        initial = cls[0].upper() if cls else "?"
-        scaled = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, 80, 80)
-        scaled.fill(0x3b3b44aa)
-        scaled_w = 80
-        scaled_h = 80
-        src_x = max(0, (w - scaled_w) // 2)
-        src_y = max(0, (h - scaled_h) // 2)
-        scaled.copy_area(0, 0, scaled_w, scaled_h, pixbuf, src_x, src_y)
+        pixbuf = make_placeholder_pixbuf(cls)
         self.cards[addr]['img'].set_from_pixbuf(pixbuf)
         return False
 
@@ -246,7 +309,7 @@ class WindowOverview(Gtk.Window):
         if addr not in self.cards:
             return False
         try:
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(path, 240, 160, True)
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(path, 200, 130, True)
             if pixbuf:
                 self.cards[addr]['img'].set_from_pixbuf(pixbuf)
         except Exception:
@@ -257,14 +320,16 @@ class WindowOverview(Gtk.Window):
         hyprctl(f'dispatch focuswindow address:{address}')
         Gtk.main_quit()
 
-    def on_click_outside(self, widget, event):
-        Gtk.main_quit()
-
     def on_key_press(self, widget, event):
         if event.keyval in (Gdk.KEY_Escape, Gdk.KEY_q, Gdk.KEY_Q):
             Gtk.main_quit()
 
     def cleanup(self):
+        if os.path.exists(LOCK_FILE):
+            try:
+                os.unlink(LOCK_FILE)
+            except OSError:
+                pass
         if os.path.isdir(TMP_DIR):
             for f in os.listdir(TMP_DIR):
                 try:
