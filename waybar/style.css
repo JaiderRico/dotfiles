@@ -91,6 +91,10 @@ window#waybar {
     color: #cba6f7;
 }
 
+#workspaces button.empty {
+    display: none;
+}
+
 #workspaces button:hover {
     color: #cdd6f4;
     background: rgba(203, 166, 247, 0.15);
