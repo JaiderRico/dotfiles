@@ -16,7 +16,8 @@
     ],
 
     "hyprland/workspaces": {
-        "format": "{name}"
+        "format": "●",
+        "sort-by-number": true
     },
 
     "clock": {
