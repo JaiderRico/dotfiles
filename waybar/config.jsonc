@@ -8,8 +8,12 @@
     "modules-left": ["hyprland/workspaces"],
     "modules-center": ["clock", "custom/notification"],
     "modules-right": [
+        "custom/cpu",
+        "memory",
+        "custom/updates",
         "network",
         "bluetooth",
+        "pulseaudio",
         "battery",
         "custom/usb",
         "custom/power"
@@ -86,5 +90,26 @@
             "warning": 30,
             "critical": 15
         }
+    },
+
+    "custom/cpu": {
+        "format": "󰻠 {}%",
+        "interval": 5,
+        "exec": "top -bn1 | grep 'Cpu(s)' | awk '{print $2}' | cut -d'.' -f1",
+        "tooltip": true
+    },
+
+    "memory": {
+        "format": "󰍛 {percentage}%",
+        "interval": 5,
+        "tooltip-format": "{used:0.1f}GiB / {total:0.1f}GiB"
+    },
+
+    "custom/updates": {
+        "format": "󰏗 {}",
+        "interval": 3600,
+        "exec": "checkupdates 2>/dev/null | wc -l",
+        "tooltip": true,
+        "on-click": "kitty -e sudo pacman -Syu"
     }
 }

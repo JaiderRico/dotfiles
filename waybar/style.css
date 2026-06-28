@@ -43,13 +43,31 @@ window#waybar {
     padding: 0 4px;
 }
 
-#network, #bluetooth, #pulseaudio, #battery, #custom-usb {
+#network, #bluetooth, #pulseaudio, #battery, #custom-usb, #custom-cpu, #memory, #custom-updates {
     margin-right: 4px;
 }
 
 #custom-usb {
     color: #a6e3a1;
     padding: 0 6px;
+}
+
+#custom-cpu {
+    color: #89b4fa;
+    padding: 0 6px;
+    font-size: 13px;
+}
+
+#memory {
+    color: #a6e3a1;
+    padding: 0 6px;
+    font-size: 13px;
+}
+
+#custom-updates {
+    color: #f9e2af;
+    padding: 0 6px;
+    font-size: 13px;
 }
 
 #custom-power {

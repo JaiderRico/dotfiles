@@ -28,6 +28,7 @@ hypridle
 hyprland
 hyprlock
 hyprpaper
+hyprpicker
 hyprpolkitagent
 intel-media-driver
 intel-ucode

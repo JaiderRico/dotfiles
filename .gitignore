@@ -17,6 +17,10 @@ thumbnails/
 Thumbs.db
 .DS_Store
 
+# Sensitive data
+*.csv
+*.pdf
+
 # Large media / ISOs (not config)
 *.iso
 *.img
