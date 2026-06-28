@@ -1,0 +1,17 @@
+##
+# ~/.nanorc
+##
+
+set linenumbers
+set tabsize 4
+set tabstospaces
+set constantshow
+set minibar
+set mouse
+set softwrap
+set titlecolor white,blue
+set statuscolor white,blue
+set numbercolor white,black
+set selectedcolor white,magenta
+
+include "/usr/share/nano/*.nanorc"
