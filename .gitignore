@@ -21,6 +21,11 @@ Thumbs.db
 *.csv
 *.pdf
 
+# CopyQ internal data (not config)
+copyq/copyq_*.dat
+copyq/copyq_*.ini
+copyq/copyq.pub
+
 # Large media / ISOs (not config)
 *.iso
 *.img
