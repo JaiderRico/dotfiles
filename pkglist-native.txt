@@ -25,6 +25,7 @@ git
 grim
 gst-plugin-pipewire
 htop
+imagemagick
 hypridle
 hyprland
 hyprlock

@@ -1,24 +1,35 @@
 #!/usr/bin/env bash
-# Cliphist picker — muestra texto e imágenes del historial
-# Texto → copia directa
-# Imagen → previsualiza en eog, copia al cerrar
+# Cliphist picker — muestra texto e imágenes en rofi con thumbnails
 
-ENTRY=$(cliphist list | rofi -dmenu -p "Historial" -theme-str 'inputbar {enabled: false;}')
-[ -z "$ENTRY" ] && exit 1
+CACHE_DIR="/tmp/cliphist-thumbs"
+mkdir -p "$CACHE_DIR"
 
-ID=$(echo "$ENTRY" | cut -d'	' -f1)
-TYPE=$(echo "$ENTRY" | grep -oP '\[\[ binary data \K(\w+)')
+# Clean thumbs older than 1h
+find "$CACHE_DIR" -type f -mmin +60 -delete 2>/dev/null
 
-if [ "$TYPE" = "png" ] || [ "$TYPE" = "jpg" ] || [ "$TYPE" = "jpeg" ]; then
-    TMPFILE=$(mktemp /tmp/cliphist-preview-XXXXXX.png)
-    cliphist decode "$ID" > "$TMPFILE"
-    eog "$TMPFILE" &
-    EOG_PID=$!
-    wait $EOG_PID
-    wl-copy < "$TMPFILE"
-    notify-send "Cliphist" "Imagen copiada al portapapeles"
-    rm "$TMPFILE"
+ENTRIES=""
+while IFS=$'\t' read -r id content; do
+    if [[ "$content" =~ binary\ data.*(png|jpg) ]]; then
+        THUMB="$CACHE_DIR/$id.png"
+        [ ! -f "$THUMB" ] && cliphist decode "$id" 2>/dev/null | magick - -resize 32x32 PNG:"$THUMB" 2>/dev/null
+        ICON="$THUMB"
+        TEXT="[img] $id"
+    else
+        ICON="edit-paste"
+        TEXT=$(echo "$content" | tr '\n' ' ' | sed 's/[[:space:]]\+/ /g' | cut -c1-60)
+    fi
+    ENTRIES+="$id  $TEXT\0icon\x1f$ICON\n"
+done < <(cliphist list 2>/dev/null)
+
+[ -z "$ENTRIES" ] && notify-send "Cliphist" "Historial vacío" && exit 0
+
+SELECTED=$(echo -e "$ENTRIES" | rofi -dmenu -p "Historial" -theme-str 'inputbar {enabled: false; listview {lines: 10;}}')
+[ -z "$SELECTED" ] && exit 0
+
+ID=$(echo "$SELECTED" | awk '{print $1}')
+
+if cliphist decode "$ID" 2>/dev/null | wl-copy; then
+    notify-send "Cliphist" "Copiado al portapapeles"
 else
-    cliphist decode "$ID" | wl-copy
-    notify-send "Cliphist" "Texto copiado al portapapeles"
+    notify-send -u critical "Cliphist" "Error al copiar"
 fi
