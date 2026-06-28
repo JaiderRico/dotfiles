@@ -23,7 +23,7 @@ done < <(cliphist list 2>/dev/null)
 
 [ -z "$ENTRIES" ] && notify-send "Cliphist" "Historial vacío" && exit 0
 
-SELECTED=$(echo -e "$ENTRIES" | rofi -dmenu -p "Historial" -theme-str 'inputbar {enabled: false; listview {lines: 10;}}')
+SELECTED=$(echo -e "$ENTRIES" | rofi -dmenu -p "Historial" -theme-str 'inputbar{enabled:false;}listview{lines:10;}')
 [ -z "$SELECTED" ] && exit 0
 
 ID=$(echo "$SELECTED" | awk '{print $1}')
