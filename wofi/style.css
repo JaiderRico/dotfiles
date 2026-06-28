@@ -1,7 +1,7 @@
 window {
     margin: 0;
-    border: 1px solid rgba(69, 71, 90, 0.6);
-    background-color: rgba(30, 30, 46, 0.88);
+    border: 1px solid #45475a;
+    background-color: #1e1e2e;
     border-radius: 16px;
     font-family: "JetBrainsMono Nerd Font";
     font-size: 12px;
@@ -10,16 +10,16 @@ window {
 #input {
     margin: 12px 12px 4px;
     padding: 8px 14px;
-    border: 1px solid rgba(69, 71, 90, 0.6);
+    border: 1px solid #45475a;
     border-radius: 10px;
-    background-color: rgba(49, 50, 68, 0.7);
+    background-color: #313244;
     color: #cdd6f4;
     font-family: "JetBrainsMono Nerd Font";
     font-size: 12px;
 }
 
 #input:focus {
-    border-color: rgba(203, 166, 247, 0.8);
+    border-color: #cba6f7;
 }
 
 #inner-box {
@@ -53,7 +53,7 @@ window {
 }
 
 #entry:selected {
-    background-color: rgba(49, 50, 68, 0.8);
+    background-color: #313244;
     border: none;
     outline: none;
 }
