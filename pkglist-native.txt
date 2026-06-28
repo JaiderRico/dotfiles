@@ -19,6 +19,7 @@ eog
 evince
 exfatprogs
 firefox
+flameshot
 flatpak
 git
 grim
