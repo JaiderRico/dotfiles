@@ -1,24 +1,21 @@
-/* Menús contextuales GTK3 */
 window.background.popup {
-    background: transparent !important;
-    background-color: transparent !important;
-    box-shadow: none !important;
+    background-color: transparent;
+    box-shadow: none;
 }
 
 window.background.popup menu,
 menu.background,
 menu {
-    background: rgba(0, 0, 0, 0.65) !important;
-    border: 1.5px solid rgba(203, 166, 247, 0.30);
+    background-color: rgba(0, 0, 0, 0.65);
+    border: 1px solid rgba(203, 166, 247, 0.3);
     border-radius: 14px;
     padding: 4px;
 }
 
 window.background.popup menu *,
 menu * {
-    background: transparent !important;
-    background-color: transparent !important;
-    background-image: none !important;
+    background-color: transparent;
+    background-image: none;
 }
 
 menuitem, .menuitem {
@@ -28,15 +25,15 @@ menuitem, .menuitem {
 }
 
 menuitem:hover, .menuitem:hover {
-    background: rgba(203, 166, 247, 0.15) !important;
+    background-color: rgba(203, 166, 247, 0.15);
 }
 
 menuitem separator, .menuitem separator {
-    background: rgba(203, 166, 247, 0.12) !important;
+    background-color: rgba(203, 166, 247, 0.12);
     margin: 4px 8px;
     min-height: 1px;
 }
 
 menuitem arrow, .menuitem arrow {
-    color: #cba6f7 !important;
+    color: #cba6f7;
 }
