@@ -1,11 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Bluetooth menu con wofi — rápido, conectar/desconectar/olvidar
 
-ROFI_THEME="$HOME/.config/rofi/catppuccin-mocha.rasi"
+pgrep -u "$UID" -x wofi &>/dev/null && exit 0
 
-if ! command -v bluetoothctl &>/dev/null; then
-    notify-send -u critical "Bluetooth" "bluetoothctl no está instalado"
-    exit 1
-fi
+! command -v bluetoothctl &>/dev/null && notify-send -u critical "Bluetooth" "bluetoothctl no instalado" && exit 1
 
 powered=$(bluetoothctl show 2>/dev/null | grep "Powered:" | awk '{print $2}')
 
@@ -19,10 +17,9 @@ build_menu() {
 
     if [ "$powered" = "yes" ]; then
         local paired=$(bluetoothctl devices Paired 2>/dev/null | sed 's/^Device //')
-        local connected=$(bluetoothctl devices Connected 2>/dev/null | sed 's/^Device //')
-
         if [ -n "$paired" ]; then
             menu+="---\n"
+            local connected=$(bluetoothctl devices Connected 2>/dev/null | sed 's/^Device //')
             while IFS= read -r line; do
                 [ -z "$line" ] && continue
                 mac=$(echo "$line" | awk '{print $1}')
@@ -40,12 +37,10 @@ build_menu() {
     echo -e "$menu"
 }
 
-chosen=$(build_menu | rofi -dmenu -p "Bluetooth" -theme "$ROFI_THEME" -theme-str 'inputbar {enabled: false;}')
+chosen=$(build_menu | wofi --dmenu -p "Bluetooth" --width 520 --cache-file /dev/null)
+[ -z "$chosen" ] && exit 0
 
 case "$chosen" in
-    "")
-        exit 0
-        ;;
     "󰂲 Apagar Bluetooth")
         bluetoothctl power off 2>/dev/null
         notify-send "Bluetooth" "Apagado"
@@ -60,14 +55,13 @@ case "$chosen" in
         notify-send "Bluetooth" "Buscando dispositivos..."
         bluetoothctl scan on &>/dev/null &
         SCAN_PID=$!
-        sleep 5
+        sleep 3
         kill "$SCAN_PID" 2>/dev/null
+        bluetoothctl scan off 2>/dev/null
 
         new=$(bluetoothctl devices 2>/dev/null | sed 's/^Device //' | sort)
         paired=$(bluetoothctl devices Paired 2>/dev/null | sed 's/^Device //' | sort)
         unparied=$(comm -23 <(echo "$new") <(echo "$paired") 2>/dev/null)
-
-        bluetoothctl scan off 2>/dev/null
 
         if [ -z "$unparied" ]; then
             notify-send "Bluetooth" "No se encontraron nuevos dispositivos"
@@ -78,11 +72,10 @@ case "$chosen" in
         while IFS= read -r line; do
             [ -z "$line" ] && continue
             name=$(echo "$line" | cut -d' ' -f2-)
-            mac=$(echo "$line" | awk '{print $1}')
             scan_menu+="󰂰 $name\n"
         done <<< "$unparied"
 
-        chosen_device=$(echo -e "$scan_menu" | rofi -dmenu -p "Bluetooth" -theme "$ROFI_THEME" -theme-str 'inputbar {enabled: false;}')
+        chosen_device=$(echo -e "$scan_menu" | wofi --dmenu -p "Bluetooth" --width 520 --cache-file /dev/null)
         if [ -n "$chosen_device" ]; then
             name=$(echo "$chosen_device" | sed 's/^[^ ]* //')
             mac=$(echo "$unparied" | grep -F "$name" | awk '{print $1}' | head -1)
@@ -99,14 +92,11 @@ case "$chosen" in
     *)
         name=$(echo "$chosen" | sed 's/^[^ ]* //; s/ *$//')
         mac=$(bluetoothctl devices Paired 2>/dev/null | grep -F " $name" | awk '{print $2}' | head -1)
-
-        if [ -z "$mac" ]; then
-            mac=$(bluetoothctl devices 2>/dev/null | grep -F " $name" | awk '{print $2}' | head -1)
-        fi
+        [ -z "$mac" ] && mac=$(bluetoothctl devices 2>/dev/null | grep -F " $name" | awk '{print $2}' | head -1)
 
         if [ -n "$mac" ]; then
             if bluetoothctl devices Connected 2>/dev/null | grep -q "$mac"; then
-                action=$(echo -e "󰂲 Desconectar\n󰂎 Olvidar dispositivo" | rofi -dmenu -p "$name" -theme "$ROFI_THEME" -theme-str 'inputbar {enabled: false;}')
+                action=$(echo -e "󰂲 Desconectar\n󰂎 Olvidar dispositivo" | wofi --dmenu -p "$name" --width 400 --cache-file /dev/null)
                 case "$action" in
                     "󰂲 Desconectar")
                         bluetoothctl disconnect "$mac" 2>/dev/null
@@ -118,7 +108,7 @@ case "$chosen" in
                         ;;
                 esac
             else
-                action=$(echo -e "󰂱 Conectar\n󰂎 Olvidar dispositivo" | rofi -dmenu -p "$name" -theme "$ROFI_THEME" -theme-str 'inputbar {enabled: false;}')
+                action=$(echo -e "󰂱 Conectar\n󰂎 Olvidar dispositivo" | wofi --dmenu -p "$name" --width 400 --cache-file /dev/null)
                 case "$action" in
                     "󰂱 Conectar")
                         bluetoothctl connect "$mac" 2>/dev/null
