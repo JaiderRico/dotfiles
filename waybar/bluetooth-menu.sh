@@ -15,22 +15,24 @@ build_menu() {
         menu+="󰂯 Encender Bluetooth\n"
     fi
 
+    local paired=$(bluetoothctl devices Paired 2>/dev/null | sed 's/^Device //')
+    if [ -n "$paired" ]; then
+        menu+="---\n"
+        local connected=""
+        [ "$powered" = "yes" ] && connected=$(bluetoothctl devices Connected 2>/dev/null | sed 's/^Device //')
+        while IFS= read -r line; do
+            [ -z "$line" ] && continue
+            mac=$(echo "$line" | awk '{print $1}')
+            name=$(echo "$line" | cut -d' ' -f2-)
+            if [ "$powered" = "yes" ] && echo "$connected" | grep -q "$mac"; then
+                menu+="󰄲 $name\n"
+            else
+                menu+="󰂱 $name\n"
+            fi
+        done <<< "$paired"
+    fi
+
     if [ "$powered" = "yes" ]; then
-        local paired=$(bluetoothctl devices Paired 2>/dev/null | sed 's/^Device //')
-        if [ -n "$paired" ]; then
-            menu+="---\n"
-            local connected=$(bluetoothctl devices Connected 2>/dev/null | sed 's/^Device //')
-            while IFS= read -r line; do
-                [ -z "$line" ] && continue
-                mac=$(echo "$line" | awk '{print $1}')
-                name=$(echo "$line" | cut -d' ' -f2-)
-                if echo "$connected" | grep -q "$mac"; then
-                    menu+="󰄲 $name\n"
-                else
-                    menu+="󰂱 $name\n"
-                fi
-            done <<< "$paired"
-        fi
         menu+="---\n󰂰 Buscar dispositivos"
     fi
 
@@ -47,8 +49,15 @@ case "$chosen" in
         exit 0
         ;;
     "󰂯 Encender Bluetooth")
+        rfkill unblock bluetooth 2>/dev/null
         bluetoothctl power on 2>/dev/null
-        notify-send "Bluetooth" "Encendido"
+        sleep 1
+        if bluetoothctl show 2>/dev/null | grep -q "Powered: yes"; then
+            notify-send "Bluetooth" "Encendido"
+            exec "$0"
+        else
+            notify-send -u critical "Bluetooth" "Error al encender"
+        fi
         exit 0
         ;;
     "󰂰 Buscar dispositivos")
@@ -95,6 +104,10 @@ case "$chosen" in
         [ -z "$mac" ] && mac=$(bluetoothctl devices 2>/dev/null | grep -F " $name" | awk '{print $2}' | head -1)
 
         if [ -n "$mac" ]; then
+            if [ "$powered" != "yes" ]; then
+                notify-send "Bluetooth" "Enciende Bluetooth primero"
+                exit 0
+            fi
             if bluetoothctl devices Connected 2>/dev/null | grep -q "$mac"; then
                 action=$(echo -e "󰂲 Desconectar\n󰂎 Olvidar dispositivo" | wofi --dmenu -p "$name" --width 400 --cache-file /dev/null)
                 case "$action" in
