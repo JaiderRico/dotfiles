@@ -20,7 +20,7 @@ ENTRIES=$(cliphist list 2>/dev/null | head -50 | awk '
 
 [ -z "$ENTRIES" ] && notify-send "Cliphist" "Historial vacio" && exit 0
 
-SELECTED=$(echo "$ENTRIES" | wofi --dmenu -p "Historial" --cache-file /dev/null --prompt "cliphist")
+SELECTED=$(echo "$ENTRIES" | wofi --dmenu -p "Historial" --cache-file /dev/null --prompt "cliphist" --width 520)
 [ -z "$SELECTED" ] && exit 0
 
 ID=$(echo "$SELECTED" | awk '{print $1}')

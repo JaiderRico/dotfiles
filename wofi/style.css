@@ -1,60 +1,62 @@
 window {
     margin: 0;
-    border: 1px solid #45475a;
-    background-color: #1e1e2e;
-    border-radius: 16px;
+    border: 2px solid alpha(#cba6f7, 0.30);
+    border-radius: 20px;
+    background-color: alpha(#000000, 0.70);
     font-family: "JetBrainsMono Nerd Font";
     font-size: 12px;
 }
 
+#outer-box {
+    margin: 0;
+    padding: 14px;
+    background-color: transparent;
+    border-radius: 18px;
+}
+
 #input {
-    margin: 12px 12px 4px;
-    padding: 8px 14px;
-    border: 1px solid #45475a;
-    border-radius: 10px;
-    background-color: #313244;
+    margin: 0;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 14px;
+    background-color: alpha(#ffffff, 0.04);
     color: #cdd6f4;
     font-family: "JetBrainsMono Nerd Font";
     font-size: 12px;
 }
 
 #input:focus {
-    border-color: #cba6f7;
+    border-color: alpha(#cba6f7, 0.30);
 }
 
 #inner-box {
-    margin: 4px 8px;
-    padding: 4px;
+    margin: 10px 0 0;
+    padding: 0;
     background-color: transparent;
-    border-radius: 10px;
-}
-
-#outer-box {
-    margin: 4px;
-    padding: 4px;
-    background-color: transparent;
-    border-radius: 14px;
+    border-radius: 0;
 }
 
 #scroll {
-    margin: 2px;
+    margin: 0;
+    padding: 0;
     background-color: transparent;
 }
 
 #text {
-    margin: 2px 8px;
+    margin: 0;
+    padding: 0;
     color: #cdd6f4;
 }
 
 #entry {
-    padding: 8px 10px;
-    border-radius: 10px;
+    padding: 10px 14px;
+    border-radius: 12px;
     background-color: transparent;
 }
 
 #entry:selected {
-    background-color: #313244;
-    border: none;
+    background-color: alpha(#cba6f7, 0.30);
+    border: 1px solid alpha(#cba6f7, 0.30);
     outline: none;
 }
 
